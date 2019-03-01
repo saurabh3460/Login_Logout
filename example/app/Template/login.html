@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block title%}{{ block.super }}||Sing Up{%endblock%}
+{% block head%} {% endblock %} {% block nav_link%}
+<a class="nav-item nav-link active" href="/signup/">signUp</a>
+
+{% endblock %} {% block content %}
+
+<div class="row justify-content-center m-5">
+  <div class="col-6">
+    <form id="singup-form">
+      {% csrf_token %}
+      <div class="row justify-content-center w-100">
+        <div class="col-6">
+          <center><h4>Log In</h4></center>
+        </div>
+        <div class="col-12 m-1 username">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Username*"
+            id="username"
+            name="username"
+            required
+          />
+          <div class="invalid-feedback username-feed">
+            Please enter username.
+          </div>
+        </div>
+        <div class="col-12 m-1 password">
+          <input
+            type="password"
+            class="form-control "
+            placeholder="Password*"
+            id="password"
+            name="password"
+            required
+          />
+          <div class="invalid-feedback password-feed">
+            Please enter password.
+          </div>
+        </div>
+
+        <div class="col-5 m-1">
+          <button id="submit" class="btn btn-dark btn-block">
+            Log In
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  $(document).ready(() => {
+    const username = $("#username");
+    const password = $("#password");
+
+    console.log("Every thing is ok");
+    $("#submit").click(e => {
+      e.preventDefault();
+
+      if (username.val() === "") {
+        $(".username-feed").html("Please enter username.");
+        username.addClass("is-invalid");
+      }
+      if (password.val() === "") {
+        $(".password-feed").html("Please enter password.");
+        password.addClass("is-invalid");
+      }
+      if (username.val() !== "" && password.val() !== "") {
+        send(username.val(), password.val());
+      }
+    });
+
+    function send(username = "", password = "") {
+      $.ajax({
+        url: "/login/",
+        method: "POST",
+        dataType: "json",
+        data: {
+          username: username,
+          password: password,
+          csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val()
+        },
+
+        success: data => {
+          console.log(data);
+          if (data.status === 200) {
+            window.location.href = "/profile/";
+          }
+          if (data.status === 400) {
+            alert("please enter correct username and password");
+          }
+        },
+        error: error => {
+          console.log(error);
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

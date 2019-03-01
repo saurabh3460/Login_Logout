@@ -1,0 +1,188 @@
+{% extends "base.html" %} {% block title%}{{ block.super }}||Sing Up{%endblock%}
+{% block head%} {% endblock %} {% block nav_link%}
+<a class="nav-item nav-link active" href="/login/">Login</a>
+
+{% endblock %} {% block content %}
+
+<div
+  class="modal fade"
+  id="greeting"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="Greeting"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Status</h5>
+      </div>
+      <div class="modal-body">
+        <h3
+          style="color:#28a745e8; margin:5px; font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif"
+        >
+          Thank you for registration!
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center m-5">
+  <div class="col-12">
+    <form id="singup-form">
+      {% csrf_token %}
+      <div class="row justify-content-center w-100">
+        <div class="col-12">
+          <center><h4>Sing Up</h4></center>
+        </div>
+        <div class="col-5 m-1 name">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="First name*"
+            id="name"
+            name="name"
+            required
+          />
+          <div class="invalid-feedback">
+            Please enter your name.
+          </div>
+        </div>
+
+        <div class="col-5 m-1 email">
+          <input
+            type="email"
+            class="form-control"
+            placeholder="Email address*"
+            id="email"
+            name="email"
+            required
+          />
+          <div class="invalid-feedback email-feed">
+            Please enter valid email address.
+          </div>
+        </div>
+        <div class="col-5 m-1 password">
+          <input
+            type="password"
+            class="form-control "
+            placeholder="Password*"
+            id="password1"
+            name="password1"
+            required
+          />
+          <div class="invalid-feedback password-feed">
+            Please enter password.
+          </div>
+        </div>
+        <div class="col-5 m-1 password">
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Confirm password*"
+            id="password2"
+            name="password2"
+            required
+          />
+          <div class="invalid-feedback password-feed">
+            Please enter password.
+          </div>
+        </div>
+        <div class="col-5 m-1">
+          <button id="submit" class="btn btn-dark btn-block">
+            Sing Up
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  $(document).ready(() => {
+    const name = $("#name");
+    const email = $("#email");
+    const password1 = $("#password1");
+    const password2 = $("#password2");
+    // const form = $("#singup-form");
+    console.log("Every thing is ok");
+    $("#submit").click(e => {
+      e.preventDefault();
+      if (name.val()) {
+        console.log(validateEmail(email.val()));
+
+        if (email.val() && validateEmail(email.val())) {
+          email.removeClass("is-invalid");
+          if (password1.val() === password2.val()) {
+            //---------Ajax Call--------------
+            if (password1.val().length < 6) {
+              $(".password-feed").html(
+                "Please enter password upto 6 characters"
+              );
+              password1.addClass("is-invalid");
+              password2.addClass("is-invalid");
+            } else
+              send(name.val(), email.val(), password1.val(), password2.val());
+          } else {
+            $(".password-feed").html("Please enter valid password.");
+            password1.addClass("is-invalid");
+            password2.addClass("is-invalid");
+          }
+        } else {
+          email.addClass("is-invalid");
+        }
+      } else {
+        console.log("not enterd name");
+        name.addClass("is-invalid");
+      }
+      if (email.val() === "") email.addClass("is-invalid");
+      if (password1.val() === "") {
+        $(".password-feed").html("Please enter password.");
+        password1.addClass("is-invalid");
+      }
+      if (password2.val() === "") {
+        $(".password-feed").html("Please enter valid password.");
+        password1.addClass("is-invalid");
+      }
+    });
+
+    function validateEmail(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    }
+
+    function send(name = "", email = "", password1 = "", password2 = "") {
+      $.ajax({
+        url: "/signup/",
+        method: "POST",
+        dataType: "json",
+        data: {
+          name: name,
+          email: email,
+          password1: password1,
+          password2: password2,
+          csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val()
+        },
+
+        success: data => {
+          console.log(data);
+          if (data.status === 200) {
+            $("#greeting").modal("show");
+            setTimeout(() => {
+              $("#greeting").modal("show");
+              window.location.href = "/profile/";
+            }, 1700);
+          }
+          if (data.status === 400) {
+            alert(data.msg);
+          }
+        },
+        error: error => {
+          console.log(error);
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

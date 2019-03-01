@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block title%}{{ block.super }}||Sing Up{%endblock%}
+{% block head%} {% endblock %} {% block nav_link%}
+<a class="nav-item nav-link active" href="/logout/">Logout</a>
+
+{% endblock %} {% block content %}
+
+<div class="row justify-content-center m-5" style="text-align: center;">
+  <div class="col-12">
+    <img
+      src="https://www.shareicon.net/data/2016/09/01/822725_user_512x512.png"
+      height="100"
+      width="100"
+    />
+  </div>
+  <div class="col-12">
+    <div class="row justify-content-center m-2" style="text-align: center;">
+      <div class="col- m-1">
+        <h5>Name:</h5>
+      </div>
+      <div class="col- m-1">
+        <h5>{{ user }}</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 ">
+    <div class="row justify-content-center m-2" style="text-align: center;">
+      <div class="col- m-1">
+        <h5>Email:</h5>
+      </div>
+      <div class="col- m-1">
+        <h5>{{ user.email }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
