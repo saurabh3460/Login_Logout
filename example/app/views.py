@@ -26,7 +26,7 @@ def signup(request):
                 try:
                     user = User.objects.create_user(**context)
                     user.is_active = True
-                    login(request, user)
+                    user_login(request, user)
                     return JsonResponse({"status": 200})
                 except IntegrityError:
                     return JsonResponse({"status": 400, "msg": "username or email already exits"})
